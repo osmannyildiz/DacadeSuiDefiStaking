@@ -64,6 +64,7 @@ module stakingContract::staking {
     ) {
         let quantity = coin::value(&coin);
         assert!(quantity != 0, ERROR_INSUFFICENT_COIN);
+        account::increase_total_stake(pool, quantity);
         increase_user_available_balance(
             pool,
             account::account_owner(account_cap),
@@ -79,7 +80,8 @@ module stakingContract::staking {
         quantity: u64,
         ctx: &mut TxContext
     ): Coin<SUI> {
-        coin::from_balance(decrease_user_available_balance(pool, account_cap, quantity, clock), ctx)
+        account::decrease_total_stake(pool, quantity);
+        coin::from_balance(decrease_user_available_balance(pool, account_cap, quantity, clock), ctx) 
     }
 
     // === Private Functions ===

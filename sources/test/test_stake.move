@@ -8,6 +8,7 @@ module stakingContract::test_stake {
     use sui::test_utils::{assert_eq};
     use sui::clock::{Self, Clock};
     use sui::transfer::{Self};
+    use sui::balance;
 
     use std::vector;
     use std::string::{Self, String};
@@ -47,6 +48,8 @@ module stakingContract::test_stake {
             assert_eq(balance, 1000_000_000_000);
             assert_eq(reward, 0);
 
+            assert_eq(account::get_total_stake(&pool), 1000_000_000_000);
+
             clock::share_for_testing(clock);
             ts::return_to_sender(scenario, account_cap);
             ts::return_shared(pool);
@@ -67,6 +70,9 @@ module stakingContract::test_stake {
             let (balance, reward) = account::account_balance(&pool, account::account_owner(&account_cap));
             assert_eq(balance, 0);
             assert_eq(reward, 2_737_909_262);
+
+            assert_eq(account::get_total_stake(&pool), 0);
+
 
             ts::return_shared(clock);
             ts::return_to_sender(scenario, account_cap);
@@ -121,6 +127,9 @@ module stakingContract::test_stake {
             assert_eq(balance, 100000_000_000_000);
             assert_eq(reward, 0);
 
+            assert_eq(account::get_total_stake(&pool), 100000_000_000_000);
+
+
             ts::return_shared(clock);
             ts::return_to_sender(scenario, account_cap);
             ts::return_shared(pool);
@@ -142,6 +151,8 @@ module stakingContract::test_stake {
             let (balance, reward) = account::account_balance(&pool, account::account_owner(&account_cap));
             assert_eq(balance, 0);
             assert_eq(reward, 3285_491_115_325);
+
+            assert_eq(account::get_total_stake(&pool), 0);
 
             ts::return_shared(clock);
             ts::return_to_sender(scenario, account_cap);
