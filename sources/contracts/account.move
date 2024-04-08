@@ -42,6 +42,7 @@ module stakingContract::account {
     struct Pool has key, store {
        id: UID,
        account_balances: Table<address, Account>,
+       total_stake: u128,
        interest: u128
     }
 
@@ -69,12 +70,25 @@ module stakingContract::account {
         pool.interest
     }
 
+    public fun get_total_stake(pool: &Pool) : u128 {
+        pool.total_stake
+    }
+
     public(friend) fun borrow_mut_pool(pool: &mut Pool) : &mut Pool {
         pool
     }
 
     public(friend) fun new_interest(pool: &mut Pool, num: u128) {
         pool.interest = num;
+    }
+
+    public(friend) fun increase_total_stake(pool: &mut Pool, amount: u64) {
+        pool.total_stake = pool.total_stake + (amount as u128);
+    }
+
+    public(friend) fun decrease_total_stake(pool: &mut Pool, amount: u64) {
+        assert!((amount as u128) <= pool.total_stake, ERROR_INVALID_QUANTITIY);
+        pool.total_stake = pool.total_stake - (amount as u128);
     }
 
     public fun set_account(account: &mut Account, duration_: u64, reward: u64) {
@@ -102,6 +116,7 @@ module stakingContract::account {
         let pool = Pool{
             id:object::new(ctx),
             account_balances: table::new(ctx),
+            total_stake: 0,
             interest:10
             };
         pool
